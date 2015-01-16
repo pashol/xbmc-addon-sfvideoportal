@@ -1,11 +1,16 @@
 
 import os, re, sys
-from datetime import date, timedelta
+#from datetime import date, timedelta
 import urllib, urllib2, HTMLParser
 import xbmcgui, xbmcplugin, xbmcaddon
 from mindmade import *
 import simplejson
 from BeautifulSoup import BeautifulSoup
+import time
+import datetime
+from datetime import datetime as dt
+import _strptime
+
 
 __author__     = "Andreas Wetzel"
 __copyright__  = "Copyright 2011, 2012, mindmade.org"
@@ -38,6 +43,7 @@ PARAMETER_KEY_ID    = "id"
 PARAMETER_KEY_URL   = "url"
 PARAMETER_KEY_TITLE = "title"
 PARAMETER_KEY_POS   = "pos"
+PARAMETER_KEY_MONTH = "lastMonth"
 
 ITEM_TYPE_FOLDER, ITEM_TYPE_VIDEO = range(2)
 BASE_URL = "http://www.srf.ch/"
@@ -167,7 +173,9 @@ def show_sendungen_abisz():
         title = show.find( "img", "az_thumb")['alt']
         id = getIdFromUrl( url)
         image = getThumbnailForId( id)
-        addDirectoryItem( ITEM_TYPE_FOLDER, title, {PARAMETER_KEY_MODE: MODE_SENDUNG, PARAMETER_KEY_ID: id, PARAMETER_KEY_URL: url }, image)
+        
+        lastMonth = dt.today()
+        addDirectoryItem( ITEM_TYPE_FOLDER, title, {PARAMETER_KEY_MODE: MODE_SENDUNG, PARAMETER_KEY_ID: id, PARAMETER_KEY_MONTH: lastMonth.strftime("%Y%m"), PARAMETER_KEY_URL: url }, image)
 
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
@@ -203,10 +211,12 @@ def show_sendungen_thema( params):
 
 
 def show_sendung( params):
-    sendid = params.get( PARAMETER_KEY_ID)
-    urlParam = params.get( PARAMETER_KEY_URL)
-    url = BASE_URL + getUrlWithoutParams( urlParam)
-    soup = BeautifulSoup( fetchHttp( url, {"id": sendid}))
+    sendid = params.get(PARAMETER_KEY_ID)
+    urlParam = params.get(PARAMETER_KEY_URL)
+    url = BASE_URL + getUrlWithoutParams(urlParam)
+    lastMonth = params.get(PARAMETER_KEY_MONTH)
+    datestring = datetime.datetime.strptime(lastMonth, "%Y%m").strftime("%Y-%m")
+    soup = BeautifulSoup( fetchHttp( url, {"id": sendid, "period": datestring}))
 
     for show in soup.findAll( "li", "sendung_item"):
         title = show.find( "h3", "title").text
@@ -216,6 +226,10 @@ def show_sendung( params):
         id = getIdFromUrl( a['href'])
         addDirectoryItem( ITEM_TYPE_VIDEO, title + " " + titleDate, {PARAMETER_KEY_MODE: MODE_PLAY, PARAMETER_KEY_ID: id }, image)
 
+    lastMonth = datetime.datetime.strptime(lastMonth, "%Y%m")
+    first = datetime.datetime(day=1, month=lastMonth.month, year=lastMonth.year)
+    lastMonth = first - datetime.timedelta(days=1)
+    addDirectoryItem( ITEM_TYPE_FOLDER, "vorheriger Monat", {PARAMETER_KEY_MODE: MODE_SENDUNG, PARAMETER_KEY_MONTH: lastMonth.strftime("%Y%m"), PARAMETER_KEY_URL: url }, image)
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
@@ -230,12 +244,12 @@ def show_verpasst():
         rightDay = soup.find( "div", { "id": "right_day"})
         timestamp = long(rightDay.find( "input", "timestamp")['value'])
 
-    day = date.fromtimestamp( timestamp)
+    day = datetime.datetime.fromtimestamp( timestamp)
 
     for x in range(0, 12):
         title = day.strftime( "%A, %d. %B %Y")
         addDirectoryItem( ITEM_TYPE_FOLDER, title, {PARAMETER_KEY_MODE: MODE_VERPASST_DETAIL, PARAMETER_KEY_POS: day.strftime( "%s")})
-        day = day - timedelta( days=1)
+        day = day - datetime.timedelta( days=1)
 
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
