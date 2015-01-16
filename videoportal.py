@@ -7,7 +7,6 @@ import simplejson
 from BeautifulSoup import BeautifulSoup
 import time
 import datetime
-from datetime import datetime as dt
 
 
 __author__     = "Andreas Wetzel"
@@ -46,9 +45,6 @@ PARAMETER_KEY_MONTH = "lastMonth"
 ITEM_TYPE_FOLDER, ITEM_TYPE_VIDEO = range(2)
 BASE_URL = "http://www.srf.ch/"
 BASE_URL_PLAYER = "http://www.srf.ch/player/tv"
-# for some reason, it only works with the old player version.
-FLASH_PLAYER = "http://www.videoportal.sf.tv/flash/videoplayer.swf"
-#FLASH_PLAYER = "http://www.srf.ch/player/tv/flash/videoplayer.swf"
 
 settings = xbmcaddon.Addon( id=PLUGINID)
 
@@ -124,14 +120,14 @@ def getIdFromUrl( url):
 def getUrlWithoutParams( url):
     return url.split('?')[0]
 
-
+# Get JSON for the Playlist items
 def getJSONForId( id):
     json_url = BASE_URL + "/webservice/cvis/segment/" + id + "/.json?nohttperr=1;omit_video_segments_validity=1;omit_related_segments=1"
     url = fetchHttp( json_url).split( "\n")[1]
     json = simplejson.loads( url)
     return json
 
-
+# Get the high definition playlist from JSON
 def getVideoFromJSON( json):
     streams = json["playlists"]["playlist"]
     index = 2 * int(settings.getSetting( id="quality"))
@@ -171,8 +167,8 @@ def show_sendungen_abisz():
         title = show.find( "img", "az_thumb")['alt']
         id = getIdFromUrl( url)
         image = getThumbnailForId( id)
-        
-        lastMonth = dt.today()
+        # Todays date to pass on from now on
+        lastMonth = datetime.datetime.today()
         addDirectoryItem( ITEM_TYPE_FOLDER, title, {PARAMETER_KEY_MODE: MODE_SENDUNG, PARAMETER_KEY_ID: id, PARAMETER_KEY_MONTH: lastMonth.strftime("%Y%m"), PARAMETER_KEY_URL: url }, image)
 
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
@@ -198,6 +194,7 @@ def show_sendungen_thema( params):
     soup = BeautifulSoup( fetchHttp( url , {"sort" : "topic"}))
 
     topic = soup.find( "li", {"id" : selected_topic})
+    # Loop through Shows
     for show in topic.findAll( "li", "az_item"):
         url = show.find( "a")['href']
         title = show.find( "img", "az_thumb")['alt']
@@ -213,12 +210,11 @@ def show_sendung( params):
     urlParam = params.get(PARAMETER_KEY_URL)
     url = BASE_URL + getUrlWithoutParams(urlParam)
     lastMonth = params.get(PARAMETER_KEY_MONTH)
+    # Create string from date passed on
     datestring = datetime.datetime(*(time.strptime(lastMonth, "%Y%m")[:6])).strftime("%Y-%m")
-    tempURL = url + "?" + "id=" + sendid + "&period=" + datestring
-    log( "URL: %s" % tempURL)
     soup = BeautifulSoup( fetchHttp( url, {"id": sendid, "period": datestring}))
 
-
+    # Loop through Episodes
     for show in soup.findAll( "li", "sendung_item"):
         title = show.find( "h3", "title").text
         titleDate = show.find( "div", "title_date").text
@@ -227,9 +223,11 @@ def show_sendung( params):
         id = getIdFromUrl( a['href'])
         addDirectoryItem( ITEM_TYPE_VIDEO, title + " " + titleDate, {PARAMETER_KEY_MODE: MODE_PLAY, PARAMETER_KEY_ID: id }, image)
 
+    # Get last month    
     lastMonth = datetime.datetime(*(time.strptime(lastMonth, "%Y%m")[:6]))
     first = datetime.datetime(day=1, month=lastMonth.month, year=lastMonth.year)
     lastMonth = first - datetime.timedelta(days=1)
+    # Add directory for last month
     addDirectoryItem( ITEM_TYPE_FOLDER, "vorheriger Monat", {PARAMETER_KEY_MODE: MODE_SENDUNG, PARAMETER_KEY_ID: sendid, PARAMETER_KEY_MONTH: lastMonth.strftime("%Y%m"), PARAMETER_KEY_URL: urlParam })
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
