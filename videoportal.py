@@ -1,6 +1,5 @@
 
 import os, re, sys
-#from datetime import date, timedelta
 import urllib, urllib2, HTMLParser
 import xbmcgui, xbmcplugin, xbmcaddon
 from mindmade import *
@@ -214,9 +213,11 @@ def show_sendung( params):
     urlParam = params.get(PARAMETER_KEY_URL)
     url = BASE_URL + getUrlWithoutParams(urlParam)
     lastMonth = params.get(PARAMETER_KEY_MONTH)
-    #datestring = datetime.datetime.strptime(lastMonth, "%Y%m").strftime("%Y-%m")
     datestring = datetime.datetime(*(time.strptime(lastMonth, "%Y%m")[:6])).strftime("%Y-%m")
+    tempURL = url + "?" + "id=" + sendid + "&period=" + datestring
+    log( "URL: %s" % tempURL)
     soup = BeautifulSoup( fetchHttp( url, {"id": sendid, "period": datestring}))
+
 
     for show in soup.findAll( "li", "sendung_item"):
         title = show.find( "h3", "title").text
@@ -229,7 +230,7 @@ def show_sendung( params):
     lastMonth = datetime.datetime(*(time.strptime(lastMonth, "%Y%m")[:6]))
     first = datetime.datetime(day=1, month=lastMonth.month, year=lastMonth.year)
     lastMonth = first - datetime.timedelta(days=1)
-    addDirectoryItem( ITEM_TYPE_FOLDER, "vorheriger Monat", {PARAMETER_KEY_MODE: MODE_SENDUNG, PARAMETER_KEY_ID: sendid, PARAMETER_KEY_MONTH: lastMonth.strftime("%Y%m"), PARAMETER_KEY_URL: url })
+    addDirectoryItem( ITEM_TYPE_FOLDER, "vorheriger Monat", {PARAMETER_KEY_MODE: MODE_SENDUNG, PARAMETER_KEY_ID: sendid, PARAMETER_KEY_MONTH: lastMonth.strftime("%Y%m"), PARAMETER_KEY_URL: urlParam })
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
