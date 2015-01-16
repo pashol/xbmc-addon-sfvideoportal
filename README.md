@@ -5,7 +5,7 @@ It is the same, that you can find in the mindmade repository, with added feature
 
 Here a quick write up, what the plugin actually does for future reference. 
 
-Need to check the source of this readme.md. I honestly have no time to bother with the syntax of this file.
+You need to check the source of this readme.md for the details of the SRF webpage and the streams. I honestly have no time to bother with the syntax of this file.
 
 #Shows
 Shows listed at: 
@@ -17,25 +17,36 @@ Each show has those parts:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Shows divided by:
+```
  <a class="sendung_name" href="/player/tv/sendung/aeschbacher?id=0a7932df-dea7-4d8a-bd35-bba2fe2798b5">Aeschbacher</a>
-
+```
 
 #Episodes
 ##Episodes divded by:
+```
 <li class="sendung_item">
+```
 
 ##Titel:
+```
 <div class="title_date">Aeschbacher vom 11.12.2014, 22:24 Uhr</div>
+```
 
 ##Description:
+```
 <div class="description">Vollen Einsatz geben: This Schenkel, Wildhüter der Stadt Zürich, Profiboxerin Nicole Boss, Rotkreuz-Pflegefachfrau Sabine Hediger und Vollblutmusiker Karl Rechsteiner. </div>
+```
 
 #Episode ID:
-<a href="/player/tv/aeschbacher/video/voller-einsatz?id=f3608137-891f-4b1b-b615-46155730fbbe"
+```
+<a href="/player/tv/aeschbacher/video/voller-einsatz?id=f3608137-891f-4b1b-b615-46155730fbbe">
+```
 id=de8d87bd-91cb-4260-9c54-19e959f53a8a
 
 ##JSON with streams:
+```
 http://www.srf.ch//webservice/cvis/segment/de8d87bd-91cb-4260-9c54-19e959f53a8a/.json?nohttperr=1;omit_video_segments_validity=1;omit_related_segments=1
+```
 
 ##Playlists:
 In the JSON you can find the section playlists, which list high (latest episodes) and low definition streams
@@ -45,7 +56,9 @@ In the JSON you can find the section playlists, which list high (latest episodes
 
 
 ##hls: quality 100 m3u8 (low definition)
+```
 http://srfvodhd-vh.akamaihd.net/i/vod/aeschbacher/2015/01/aeschbacher_20150108_222443_v_webcast_h264_,q10,q20,q30,q40,.mp4.csmil/master.m3u8
+```
 
 Content of the .m3u8 file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,7 +78,9 @@ http://srfvodhd-vh.akamaihd.net/i/vod/aeschbacher/2015/01/aeschbacher_20150108_2
 
 
 ##hds: quality 200 m3u8 (high definition)
+```
 http://srfvodhd-vh.akamaihd.net/i/vod/aeschbacher/2015/01/aeschbacher_20150108_222443_v_webcast_h264_,q10,q20,q30,q40,q50,q60,.mp4.csmil/master.m3u8
+```
 
 Content of the .m3u8 file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -88,7 +103,10 @@ http://srfvodhd-vh.akamaihd.net/i/vod/aeschbacher/2015/01/aeschbacher_20150108_2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-working HD stream at 1280x720: http://srfvodhd-vh.akamaihd.net/i/vod/aeschbacher/2015/01/aeschbacher_20150108_222443_v_webcast_h264_,q10,q20,q30,q40,q50,q60,.mp4.csmil/index_5_av.m3u8?null=
+working HD stream at 1280x720: 
+```
+http://srfvodhd-vh.akamaihd.net/i/vod/aeschbacher/2015/01/aeschbacher_20150108_222443_v_webcast_h264_,q10,q20,q30,q40,q50,q60,.mp4.csmil/index_5_av.m3u8?null=
+```
 
 ##Period:
 Describes the point in time. Only one month at the time displayed
