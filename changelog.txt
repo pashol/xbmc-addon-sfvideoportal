@@ -1,3 +1,8 @@
+version 0.7.2
+* added a directory entry to go back one month by one
+* removed obsolete code
+* added some comments
+
 version 0.7.1
   * adapted dependencies for xbmc 13
 
