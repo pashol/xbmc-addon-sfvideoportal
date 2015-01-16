@@ -214,7 +214,8 @@ def show_sendung( params):
     urlParam = params.get(PARAMETER_KEY_URL)
     url = BASE_URL + getUrlWithoutParams(urlParam)
     lastMonth = params.get(PARAMETER_KEY_MONTH)
-    datestring = datetime.datetime.strptime(lastMonth, "%Y%m").strftime("%Y-%m")
+    #datestring = datetime.datetime.strptime(lastMonth, "%Y%m").strftime("%Y-%m")
+    datestring = datetime.datetime(*(time.strptime(lastMonth, "%Y%m")[:6])).strftime("%Y-%m")
     soup = BeautifulSoup( fetchHttp( url, {"id": sendid, "period": datestring}))
 
     for show in soup.findAll( "li", "sendung_item"):
@@ -225,10 +226,10 @@ def show_sendung( params):
         id = getIdFromUrl( a['href'])
         addDirectoryItem( ITEM_TYPE_VIDEO, title + " " + titleDate, {PARAMETER_KEY_MODE: MODE_PLAY, PARAMETER_KEY_ID: id }, image)
 
-    lastMonth = datetime.datetime.strptime(lastMonth, "%Y%m")
+    lastMonth = datetime.datetime(*(time.strptime(lastMonth, "%Y%m")[:6]))
     first = datetime.datetime(day=1, month=lastMonth.month, year=lastMonth.year)
     lastMonth = first - datetime.timedelta(days=1)
-    addDirectoryItem( ITEM_TYPE_FOLDER, "vorheriger Monat", {PARAMETER_KEY_MODE: MODE_SENDUNG, PARAMETER_KEY_MONTH: lastMonth.strftime("%Y%m"), PARAMETER_KEY_URL: url }, image)
+    addDirectoryItem( ITEM_TYPE_FOLDER, "vorheriger Monat", {PARAMETER_KEY_MODE: MODE_SENDUNG, PARAMETER_KEY_ID: sendid, PARAMETER_KEY_MONTH: lastMonth.strftime("%Y%m"), PARAMETER_KEY_URL: url })
     xbmcplugin.endOfDirectory(handle=pluginhandle, succeeded=True)
 
 
