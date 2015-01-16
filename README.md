@@ -3,7 +3,9 @@ An addon for xbmc providing access to the SF videoportal from srf.ch
 
 It is the same, that you can find in the mindmade repository, with added feature to go back in time from shows.
 
-Here a quick write up, what the plugin actually does for future reference:
+Here a quick write up, what the plugin actually does for future reference. 
+
+Need to check the source of this readme.md. I honestly have no time to bother with the syntax of this file.
 
 #Shows
 Shows listed at: 
