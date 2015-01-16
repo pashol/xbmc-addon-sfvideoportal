@@ -9,7 +9,6 @@ from BeautifulSoup import BeautifulSoup
 import time
 import datetime
 from datetime import datetime as dt
-import _strptime
 
 
 __author__     = "Andreas Wetzel"
