@@ -123,7 +123,92 @@ Alternativen:
 http://www.srf.ch/player/tv/aeschbacher/video/voller-einsatz?id=f3608137-891f-4b1b-b615-46155730fbbe
 http://podcastsource.sf.tv/nps/podcast/aeschbacher/2014/12/aeschbacher_20141211_222427_v_podcast_h264_q30.mp4
 
+Parsing Code (basically the one from mindmade.org with some minor changes):
+```
+import os, re, time
+import threading
+import urllib, urllib2, HTMLParser
+import datetime
+import simplejson
 
+SENDUNG     = 'http://www.srf.ch/player/tv/aeschbacher/video/aeschbacher-vom-15-01-2015?id=6b5b8863-9528-4c70-85a8-1ee92b30a642'
+
+def getIdFromUrl(url):
+    return re.compile( '[\?|\&]id=([0-9a-z\-]+)').findall( url)[0]
+
+# Get JSON for the Playlist items
+def fetchHttp( url, args={}, hdrs={}, post=False):
+    hdrs["User-Agent"] = "Mozilla/5.0 (X11; Linux i686; rv:5.0) Gecko/20100101 Firefox/5.0"
+    if post:
+        req = urllib2.Request( url, urllib.urlencode( args), hdrs)
+    else:
+        url = url + "?" + urllib.urlencode( args)
+        req = urllib2.Request( url, None, hdrs)
+    response = urllib2.urlopen( req)
+    encoding = re.findall("charset=([a-zA-Z0-9\-]+)", response.headers['content-type'])
+    text = response.read()
+    if len(encoding):
+        responsetext = unicode( text, encoding[0] );
+    else:
+        responsetext = text
+    response.close()
+
+    return responsetext
+
+
+def getJSONForId(id):
+    json_url = SF_ROOT + "/webservice/cvis/segment/" + id + "/.json?nohttperr=1;omit_video_segments_validity=1;omit_related_segments=1"
+    url = fetchHttp(json_url).split("\n")[1]
+    json = simplejson.loads(url)
+
+    return json
+
+
+
+def fetchHttp( url, args={}, hdrs={}, post=False):
+    hdrs["User-Agent"] = "Mozilla/5.0 (X11; Linux i686; rv:5.0) Gecko/20100101 Firefox/5.0"
+    if post:
+        req = urllib2.Request( url, urllib.urlencode( args), hdrs)
+    else:
+        url = url + "?" + urllib.urlencode( args)
+        req = urllib2.Request( url, None, hdrs)
+    response = urllib2.urlopen( req)
+    encoding = re.findall("charset=([a-zA-Z0-9\-]+)", response.headers['content-type'])
+    text = response.read()
+    if len(encoding):
+        responsetext = unicode( text, encoding[0] );
+    else:
+        responsetext = text
+    response.close()
+
+    return responsetext
+
+
+def getJSONForId( id):
+    json_url = SF_ROOT + "/webservice/cvis/segment/" + id + "/.json?nohttperr=1;omit_video_segments_validity=1;omit_related_segments=1"
+    url = fetchHttp(json_url).split("\n")[1]
+    json = simplejson.loads(url)
+
+    return json
+    
+    
+# Get the high definition playlist from JSON
+def getVideoFromJSON( json):
+    streams = json["playlists"]["playlist"]
+    sortedstreams = sorted(streams, key=lambda el: int(el["quality"]))
+    print 'Number of Streams: %s' %len(sortedstreams)
+    index = 4
+    
+    if (index >= len(sortedstreams)):
+        index = len(sortedstreams)-2
+    
+    return sortedstreams[index]["url"]
+    
+id = getIdFromUrl(SENDUNG)
+json = getJSONForId(id)
+print getVideoFromJSON(json)
+
+```
 
 
 
