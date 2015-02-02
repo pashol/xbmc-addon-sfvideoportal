@@ -1,6 +1,6 @@
 # xbmc-addon-sfvideoportal
 
-*Sadly no longer working. Only here for reference*
+*Sadly no longer working. Only here for reference. Have a look at the scrape-new.py in case you'd like to know how to get the new address*
 
 An addon for xbmc providing access to the SF videoportal from srf.ch
 
